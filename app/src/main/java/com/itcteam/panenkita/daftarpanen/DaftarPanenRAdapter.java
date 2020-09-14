@@ -1,6 +1,7 @@
-package com.itcteam.panenkita.ui.mainpage;
+package com.itcteam.panenkita.daftarpanen;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.itcteam.panenkita.R;
+import com.itcteam.panenkita.kebun.Kebun;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,7 +83,14 @@ public class DaftarPanenRAdapter extends RecyclerView.Adapter<DaftarPanenRAdapte
         holder.auto.setBackground(draw); //textview
         holder.waktuPanen.setText(sdf.format(resultdate));
         holder.panen.setText("Panen "+ String.valueOf(position+1));
-//        holder.itemView.setOnClickListener();
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, Kebun.class);
+                intent.putExtra("id_panen", value.get("id"));
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

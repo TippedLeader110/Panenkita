@@ -1,4 +1,4 @@
-package com.itcteam.panenkita.ui.mainpage;
+package com.itcteam.panenkita.daftarpanen;
 
 import android.os.Bundle;
 

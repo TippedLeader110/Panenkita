@@ -19,6 +19,7 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "panendb";
     private static final String TABLE_PANEN = "panen";
+    private static final String TABLE_KEBUN = "kebun";
 
     SQLiteDatabase db;
     private boolean notif;
@@ -30,14 +31,20 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_KASUS = " CREATE TABLE " + TABLE_PANEN + " (" +
+        String CREATE_PANEN = " CREATE TABLE " + TABLE_PANEN + " (" +
                 "  id_panen INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                 "  waktu TEXT ," +
                 "  keuntungan TEXT" +
                 ") ";
-        Log.w("BENTUK QUERY",CREATE_KASUS);
-        db.execSQL(CREATE_KASUS);
+//        Log.w("BENTUK QUERY",CREATE_KASUS);
+        db.execSQL(CREATE_PANEN);
 
+        String CREATE_KEBUN = " CREATE TABLE " + TABLE_KEBUN + " (" +
+                "  id_kebun INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                "  id_panen INTEGER ," +
+                "  nama_kebun TEXT " +
+                ") ";
+        db.execSQL(CREATE_KEBUN);
     }
 
     @Override
@@ -60,6 +67,23 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return daftarPanen;
+    }
+
+    public ArrayList<HashMap<String, String>> getKebun(String id){
+        db = this.getReadableDatabase();
+        ArrayList<HashMap<String, String>> daftarKebun = new ArrayList<>();
+        Cursor cursor = db.rawQuery( "select * from "+TABLE_KEBUN+ " WHERE id_panen = " + id , null );
+//        cursor.moveToLast();
+        while (cursor.moveToNext()){
+            HashMap<String,String> kasus = new HashMap<>();
+            kasus.put("id_panen",Integer.toString(cursor.getInt(cursor.getColumnIndex("id_panen"))));
+            kasus.put("id",Integer.toString(cursor.getInt(cursor.getColumnIndex("id_kebun"))));
+            kasus.put("nama_kebun",cursor.getString(cursor.getColumnIndex("nama_kebun")));
+            daftarKebun.add(kasus);
+        }
+        cursor.close();
+        db.close();
+        return daftarKebun;
     }
 
     public boolean checkRow(){
@@ -88,6 +112,21 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         contentValues.put("keuntungan", "0");
         db = this.getWritableDatabase();
         if (db.insert(TABLE_PANEN, null, contentValues)!=-1){
+            db.close();
+            return true;
+        }
+        else{
+            db.close();
+            return false;
+        }
+    }
+
+    public boolean tambahKebun(String nama_kebun, int id_panen) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("nama_kebun", nama_kebun);
+        contentValues.put("id_panen", id_panen);
+        db = this.getWritableDatabase();
+        if (db.insert(TABLE_KEBUN, null, contentValues)!=-1){
             db.close();
             return true;
         }
